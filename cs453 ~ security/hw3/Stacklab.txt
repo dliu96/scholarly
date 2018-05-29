@@ -1,0 +1,97 @@
+Stacklab! 
+
+Due: Friday 10/13/2017 11:59pm.
+Greetings hacker!
+
+ 
+
+It's time for your next assignment. Your mission, should you choose to accept it, is to gain access to root on mainframe.mathcs.emory.edu. That's right! (within a container, but hey).
+
+ 
+
+Note this is a different machine from triton. Your password is the same, however.
+ 
+
+As your user on mainframe, there should be four countainers called "overflow1" through "overflow4". You simply type "ssh overflow1" to get inside the container. (If you haven't set up SSH keys, run "ssh-keygen" and "cat .ssh/id_rsa.pub >> .ssh/authorized_keys")
+
+ 
+
+Inside each container, there are a number of a files in /c0re.
+
+ 
+
+You will see four C programs: overflow1.c, overflow2.c, overflow3.c and overflow4.c. They have been compiled into overflow1 through overflow4, but also as attackme1 through attackme4, respectively. These last four binaries are run "setuid" (or SUID), which means that they will be run with additional privileges, specifically all privileges belonging to the _owner of the binary_, when the kernel executes them. In other words, when you run ./attackme1, the file won't be running under your user, but as a root user. The reason why setuid binaries excist is that you might want to allow regular users to perform privileged operations, like using the graphics card, ejecting a CD-ROM or spawning an administrative shell (like "su" or "sudo"). 
+
+ 
+
+Your goal is to write an exploit to make the programs attackme1, attackme2, attackme3 and attackme4 spawn shells as their users, so that you can access their home directories (such as /home/overflow2/ymirv/). Inside this home directory, you should run a program called /flagpole. This will send your flag (from /flag) to our flag server to register that you are an el33t person. Just for kicks, keep track of your /flag contents as well :-)
+
+To compromise each of these binaries, you will be writing an exploit for stack overflows that exist in the code. To ensure you got it right, you should be working with gdb on "overflow1". When your exploit for overflow1 is ready (so that it will make overflow1 open a shell), you should try the exact same exploit code on "attackme1". The reason for doing it this way is that gdb won't be able to trace a program owned by a different user, so gdb ./attackme1 is going to fail. However, overflow1 is identical attackme1 so it should all work out. The same holds true for the other overflows.
+
+ 
+
+STAGE 1 (20 pts): In overflow1.c, you will be writing a regular stack overflow exploit. We have been talking about how to do this in lectures. For supplementary explanations, check out the good old "Smashing the Stack for Fun and Profit" article (http://www.phrack.org/issues.html?id=14&issue=49). The idea is to make the saved %eip value point to the shellcode on your buffer. You can use a NOP sled (series of 0x90 which encode the x86 'nop' instruction) to make the exploit more robust to changes in stack offsets. NOTE: If you are able to spawn a shell, you may still not get the privileges you seek because /bin/bash will shed privileges it obtains unless euid=uid. So you'd need to write a program to do setuid(geteuid()) or something like that. See below.
+
+ 
+
+STAGE 2 (40 pts): In overflow2.c, you need to be careful with picking a shellcode that doesn´t have any special characters. Sounds like you might want to find an alphanumeric shellcode ... (hint, hint). DON'T START WITH THIS ONE -- it takes some time. Hint: Metasploit framework is set up within a container
+
+ 
+
+STAGE 3 (30 pts): In overflow3.c, you need to become a bit more creative. There is little room for maneuver in the first routine. But there is another routine looks more promising, but it never gets called... (hint, hint).
+
+ 
+
+STAGE 4 (20 pts): In overflow4.c, you are really restricted. How on earth are you going to execute any code with that little buffer space? Is there anything in memory that can be of help? (hint, hint)
+
+This is an individual assignment -- but of course you can discuss it with your friends (just no exchanging code). You may solve the stages in any order -- but they are effectively ordered from easy to hard.
+
+ 
+
+WARNING: The only files that persist within a container are in your /home/USERNAME directory. Make sure you have all your important files there.
+
+Good luck! :-)
+
+ 
+
+ 
+
+Extra info:
+
+Your objective is to exploit each of the attackme programs to spawn a shell as their effective user id.
+
+(They technically belong to a different user.)
+
+ 
+
+The files were compiled with:
+
+gcc -O0 -Wall -m32 -fno-stack-protector -mpreferred-stack-boundary=2 -z execstack -m overflowN.c -o overflowN
+gcc -O0 -Wall -m32 -fno-stack-protector -mpreferred-stack-boundary=2 -z execstack -m overflowN.c -o attackmeN
+chown differentuser attackmeN
+chmod 4755 attackmeN
+ 
+
+After you compromise each attackme file, remember to run /flagpole
+
+ 
+
+HINT: You may spawn a shell but it may not be giving you the privileges you want!
+
+This is because /bin/bash (which /bin/sh is linked to) is dropping extra privileges if uid != euid.
+
+You will need to use a shellcode that does setuid (geteuid()). Alternatively, you can write a C
+
+program (for example with the binary /tmp/ZZ) that does:
+
+main () {
+        setuid(N); setreuid(N,N,N);
+        execve("/bin/sh",...)
+}
+where N is the UID of the user you are trying to compromise
+
+ 
+
+HINT: One of these programs may need an alphanumeric shellcode ...
+
+These can be constructed automatically: Google/Bing/Duckduckgo are your friends...

@@ -1,0 +1,26 @@
+Tauntlab! 
+
+Due 10/27 11:59pm
+
+Welcome back to the cyberbunker, soldier!
+
+The non-executable bit for writable segments (NX) has now been enabled for some of your targets. You will no longer be able to jump to shellcode on the stack (or on the heap for that matter). This is why you should consider a stairway to heaven()...
+ 
+Your objective is again to exploit at least three programs to spawn a shell as their effective user id. You must call /flagpole as root for each of them. 
+The programs to exploit on mainframe.mathcs.emory.edu are:
+T1) Libc (ssh libc1): Somehow you need to defeat the NX bit for a regular overflow...  
+T2) Format strings (ssh format1): Show us some format string magic! I recommend you start with this one. NOTE: The stack and heap are both executable!
+T3) Redvuln/Greenvuln/Bluevuln/Purplevuln (ssh heap1): Each program uses a different malloc() implementation by the students in Operating Systems at Reykjavik University 2015 who are taking the class. You are not allowed to distribute these programs. You can choose any one of them (i.e., at least one of them has been verified to work). NOTE: The stack and heap have been made executable in each of the T3 programs!
+T4) Return oriented programming (ssh rop1): Show us what you can do ...
+ 
+Grading: If you solve all four classes (T1-T4) you will receive 11/10 as a grade. If you solve three of them you get 10/10. Two you're down to 7/10 credits and if you solve a single one you have 3/10. For late hand-ins, your grade decreases by 30% for that part as before.
+ 
+The files were compiled with the Makefile. The /c0re/attack[name] binary is identical to the other file in /c0re, except it has the setuid bit enabled for root, so that the binary runs under the precious root privileges.
+ 
+After you compromise each attackme file, remember to run /flagpole. (It's mostly silent, we'll set up a scoreboard -- stay tuned!)
+ 
+ 
+COMPETITION: We will be awarding extra credits of _5%_ for the person/people with the _shortest_ argument to exploit the /labs/format/format binary (i.e. shortest format string). However, this 5% will be divided between the people who accomplish that length.
+So for instance, if Alice and Bob both have a string of length N, Charlie has one of length N+1 and everybody
+else has a longer one, then Alice and Bob each get 2.5% extra credit. Those who win must be able to demonstrate the attack. 
+ 
