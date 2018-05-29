@@ -1,0 +1,369 @@
+/*
+THIS CODE WAS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+CODE WRITTEN BY OTHER STUDENTS OR SOURCES OUTSIDE OF THOSE
+PROVIDED BY THE INSTRUCTOR. Derek Liu
+*/
+
+import java.util.*;
+
+public class HeapTreePQ<K,V> extends AbstractPriorityQueue<K,V>
+{
+
+	//Node structure to implement the heap as a complete binary tree
+	private class Node
+	{
+		private PQEntry<K,V> data;
+		private Node parent;
+		private Node left;
+		private Node right;
+
+		private Node() {
+            this.data = null;
+            this.parent = null;
+            this.left = null;
+            this.right = null;
+        }
+
+		private Node(PQEntry<K,V> newData) {
+            this.data = newData;
+            this.parent = null;
+            this.left = null;
+            this.right = null;
+        }
+
+	    private Node getRightChild(){
+	    	return this.right;
+	    }
+
+	    private Node getLeftChild(){
+	    	return this.left;
+	    }
+
+	    private void delete(){
+	    	this.data = null;
+            this.parent = null;
+            this.left = null;
+            this.right = null;
+	    }
+
+	    //Node visualization purposes only
+        private void printNode(){
+        	System.out.println("	----- NODE -----");
+        	if(this.data != null){
+	        	System.out.println("Key: " + this.data.getKey() + "		Value: " + this.data.getValue()); 
+	        	if(this.parent != null){
+	        		System.out.println("Parent: " + this.parent + "(" + this.parent.data.getKey() + "," + this.parent.data.getValue() + ")");
+	        	}
+	        	else{  System.out.println("Parent: " + this.parent); }
+
+	        	if(this.left != null && this.right != null){
+		        	if(this.left.data != null && this.right.data != null){
+		        		System.out.println("Left: (" + this.left.data.getKey() + "," + this.left.data.getValue() + ")		Right: (" + this.right.data.getKey() + "," + this.right.data.getValue() + ")"); 
+		        	} 
+		        } else if (this.left != null && this.right == null){
+		        	if(this.left.data != null && this.right == null){
+		        		System.out.println("Left: (" + this.left.data.getKey() + "," + this.left.data.getValue() + ")");
+		        	}
+		        }
+        	}
+        	System.out.println();
+        }
+	}
+
+	//every new heap comes with these properties
+	Node root = null;
+	int heapSize = 0;
+	private Comparator<K> keyComp;
+
+	//we're gonna need these comparators later when we compare keys!
+	public HeapTreePQ() { 
+		this(new DefaultComparator<K>());
+	}
+
+	public HeapTreePQ(Comparator<K> comp) { keyComp = comp; }
+
+	//insert a new node onto the tree. keep in mind the 2 heap properties!
+	public Entry<K,V> insert(K k, V v) throws IllegalArgumentException {
+		//make sure the key is valid
+    	checkKey(k);
+
+    	//create new node
+		PQEntry<K,V> newEntry = (PQEntry<K,V>) new PQEntry<K,V>(k,v);
+		Node newNode = new Node(newEntry);
+
+		//if the tree is empty, give the new node some r00t access!!
+    	if(root == null){
+            root = newNode;
+            heapSize++;
+    	}
+    	//make our way to the leftmost open position on the bottom layer of the tree
+        else {
+        	//create our traveller node
+        	Node temp = root;
+
+        	/*Cool trick: 
+        	 *
+        	 *		1. Take the number of nodes on the heap.
+        	 *		2. Convert number of nodes to a binary string (2 -> 10)
+        	 *		3. Chop off the first digit in the binary string ( 2 -> 0)
+        	 *		4. The path to the next open position on the heap can be determined by following these rules:
+        	 *										
+        	 *						0 -> go left
+        	 *						1 -> go right
+        	 *
+        	*/
+
+            String binaryString = Integer.toBinaryString(++heapSize);
+            //System.out.println("Binary = " + binaryString);
+
+            //follow the binary string with our traveller node
+            for(int i = 1; i < binaryString.length(); i++){
+            	
+            	//go left
+            	if(binaryString.charAt(i) == '0'){
+            		//node has something in it
+            		if(temp.left != null){
+            			temp = temp.left;
+            		}
+            		//node is available
+            		else{
+            			newNode.parent = temp;
+            			temp.left = newNode;
+            		}
+            	}
+            	//go right
+            	else{
+            		//node has something in it
+            		if(temp.right != null){
+            			temp = temp.right;
+            		}
+            		//node is available
+            		else{
+            			newNode.parent = temp;
+            			temp.right = newNode;
+            		}
+            	}
+            }
+            //in order to maintain the heap-order property, we must move our newly inserted node into its correct position in the tree
+            upHeap(newNode);
+        }
+        //return the <K,V> pair we just added to the tree
+        Entry<K,V> entry = (Entry<K,V>) newEntry;
+        return entry;
+    }
+
+    //move node upwards into correct position
+    private void upHeap(Node node){
+    	PQEntry<K,V> movingEntry = node.data;
+    	PQEntry<K,V> parentEntry = node.parent.data;
+
+    	//continue to swap as long as the parent's key is larger than ours
+    	while(keyComp.compare(parentEntry.getKey(),movingEntry.getKey()) > 0 ){
+    		node = swapEntries(node.parent,node);
+    		if(node.data == null || node.parent == null){ break; }
+    		movingEntry = node.data;
+    		parentEntry = node.parent.data;
+    	}
+
+    }
+
+    //swap the entries residing in two separate nodes
+    private Node swapEntries(Node parent, Node child){
+    	
+    	PQEntry<K,V> parentEntry = parent.data;
+    	PQEntry<K,V> childEntry = child.data;
+
+    	child.data = parentEntry;
+    	parent.data = childEntry;
+
+    	return parent;
+    }
+
+    //Get number of nodes in the heap
+    public int size() {
+        return heapSize;
+    }
+
+    //returns the entry with the smallest key (root)
+    public Entry<K,V> min(){
+    	Entry<K,V> entry = root.data;
+    	return entry;
+    }
+
+    //remove the smallest element from the tree (root). keep in mind the 2 heap properties!
+	public Entry<K,V> removeMin(){
+		Entry<K,V> entry = root.data;
+		
+		Node temp = root;
+
+		//See insert() for cool binary string trick to find last node in heap
+        String binaryString = Integer.toBinaryString(heapSize);
+        //System.out.println("Binary = " + binaryString);
+
+        //follow the binary string to node last node on the tree
+        for(int i = 1; i < binaryString.length(); i++){
+        	if(binaryString.charAt(i) == '0'){
+        		if(temp.left != null){
+        			temp = temp.left;
+        		}
+        	}
+        	else{
+        		if(temp.right != null){
+        			temp = temp.right;
+        		}
+        	}
+
+        	//we are at our last position
+        	if(i == binaryString.length() - 1){
+        		//set the entry at the root to the contents of the last node on the tree
+        		root.data = temp.data;
+        	}
+        }
+        //in order to maintain the heap-order property, we must move our newly moved node into its correct position in the tree
+        downHeap(root);
+
+        //remove all links and data of the last node from the tree structure
+        if(temp.parent.getRightChild() != null){
+        	if(temp.parent.right.data == temp.data){ temp.parent.right = null; }
+        }
+
+        if(temp.parent.getLeftChild() != null){
+        	if(temp.parent.left.data == temp.data){ temp.parent.left = null; }
+        }
+        temp.delete();
+
+        //adjust our size
+        heapSize--;
+
+        //return the entry that we just removed from the tree
+    	return entry;
+	}
+
+	//move node downward into correct position
+	private void downHeap(Node node){
+    	PQEntry<K,V> movingEntry = node.data;
+    	PQEntry<K,V> childEntry, leftEntry, rightEntry;
+
+    	//how we will keep track of which side we are going to compare with if we have two children
+    	boolean right = false;
+
+    	leftEntry = node.left.data;
+    	rightEntry = node.right.data;
+
+    	//If node has no right child, then compare node with left child.
+    	if(node.right ==  null || node.right.data == null){
+    		if(node.left == null || node.left.data == null){
+    			System.out.println("No children!");
+    		}
+    	}
+    	//If p has both children, then compare p with its child with minimal key.
+    	else{ 
+    		if(keyComp.compare(leftEntry.getKey(),rightEntry.getKey()) > 0 ){
+    			right = true;
+    		}
+    	}
+
+    	if(right){
+    		childEntry = rightEntry;
+    	}else{
+    		childEntry = leftEntry;
+    	}
+
+
+
+    	//continue to swap as long as the heap-order property is not fulfilled
+    	while(keyComp.compare(movingEntry.getKey(),childEntry.getKey()) > 0 ){
+    		
+    		if(right){
+    			node = swapEntries(node.right,node);
+    		}else{
+    			node = swapEntries(node.left,node);
+    		}
+
+    		//no children
+    		if(node.right == null && node.left == null){ break; }
+
+    		//reset loop invariants so that we iterate the correct number of times
+    		right = false;
+    		movingEntry = node.data;
+
+	    	//If node has no right child, then compare node with left child.
+	    	if(node.right ==  null || node.right.data == null){
+	    		if(node.left == null || node.left.data == null){
+	    			System.out.println("No children!");
+	    		}
+	    	}
+	    	//If p has both children, then compare p with its child with minimal key.
+	    	else{ 
+	    		leftEntry = node.left.data;
+	    		rightEntry = node.right.data;
+	    		if(keyComp.compare(leftEntry.getKey(),rightEntry.getKey()) > 0 ){
+	    			right = true;
+	    		}
+	    	}
+
+	    	if(right){
+	    		childEntry = rightEntry;
+	    	}else{
+	    		childEntry = leftEntry;
+	    	}
+	    	
+    	}
+
+    }
+
+    //check if our tree is empty
+	public boolean isEmpty(){
+		if(root == null){
+			return true;
+		}
+		return false;
+	}
+
+
+    public static void main(String[] args){
+    	//Create a heap tree priority queue!
+    	HeapTreePQ heap = new HeapTreePQ<Integer,String>();
+
+    		//TESTING PURPOSES ONLY
+	    	//insert test
+	    	heap.insert(3,"Derek");
+	    	heap.insert(1,"Liu");
+	    	heap.insert(2,"Loves");
+	    	heap.insert(3,"Algorithms");
+	    	heap.insert(2,"And");
+	    	heap.insert(1,"Data");
+	    	heap.insert(1,"Structures");
+	    	
+	    	//view tree after insertion
+	    	System.out.println("Root");
+	    	heap.root.printNode();
+	    	System.out.println("Left(1)");
+	    	heap.root.left.printNode();
+	    	System.out.println("Right(1)");
+	    	heap.root.right.printNode();
+	    	System.out.println("Size = " + heap.size());
+	    	
+	    	//removeMin test
+	    	heap.removeMin();
+	    	System.out.println("Root");
+	    	heap.root.printNode();
+	    	System.out.println("Left(1)");
+	    	heap.root.left.printNode();
+	    	System.out.println("Right(1)");
+	    	heap.root.right.printNode();
+	    	//heap.root.right.printNode();
+	    	System.out.println();
+	    	System.out.println("Size = " + heap.size());
+	    
+    }
+}
+
+
+
+
+
+
+
+
+	
