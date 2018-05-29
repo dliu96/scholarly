@@ -1,0 +1,103 @@
+// GRADE: 75
+
+// No detailed comments (-10pts)
+
+// Your program stops counting primes at 78498.   This gives incorrect results for inputs larger than 1000000 (-15pts)
+// Your setAll() function does not set every bit to 1
+
+// Derek Liu
+// dliu55@emory.edu
+// This code was my own work. It was written without consulting code written by other students. Derek Liu
+
+#define EXTERN
+#define MAX 1000000
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "header.h"
+
+void setBitTo1(int n)
+{
+ 	prime[(n/32)] |=  1 << (n%32);
+ 
+}
+
+
+void setAll()
+{
+ 	int i;
+ 	for(i = 0; i < MAX; i++){
+		setBitTo1(i);
+  	}
+}
+
+
+
+
+void clearBit(int n)
+{
+ 	prime[(n/32)] &= ~(1 << (n%32));
+
+}
+
+int testBitIs1(int n)
+{
+	if ((prime[n/32] & (1 << (n%32) ))  ){
+		return 1; //not prime
+	}
+	return 0; //prime!
+}
+
+void sieveOfE(int n)
+{
+	setAll();
+	
+	clearBit(0); // 0 is not prime
+	clearBit(1); // 1 is not prime
+	
+	int i,j,k;
+	
+	k = 2;
+	
+	while (k <= n)
+	{
+		for(i=k; i<= n; i++)
+			if(testBitIs1(i) == 1)
+				break;
+		for(j=2*i; j<=n; j = j + i)
+			clearBit(j);
+		k = i+1;
+		
+	}			
+}
+
+int countPrimes(int n)
+{
+	int i,count;
+	i = 2;
+	count = 0;
+	
+	while (i <= n)
+	{
+		if(testBitIs1(i))
+			count = count + 1;
+		i++;
+	}
+	return count;
+}
+
+void printPrimes(int n)
+{
+	int i;
+	i = 2;
+	
+	
+	while (i <= n)
+	{
+		if(testBitIs1(i))
+			printf("%d \n",i);
+		i++;
+	}
+	
+}

@@ -1,0 +1,299 @@
+/*
+ THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+ CODE WRITTEN BY OTHER STUDENTS. Derek Liu
+ */
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.ArrayDeque;
+
+/*
+ * Recursive class to represent a position in a path
+ */
+class Position {
+	public int i; // row
+	public int j; // column
+	public char val; // 1, 0, or 'X'
+	public boolean marked;
+
+	// reference to the parentious position (parent) that leads to this position
+	// on a path
+	Position parent;
+
+	public boolean equals(Object obj) {
+		if (getClass() != obj.getClass())
+			return false;
+		Position other = (Position) obj;
+		if (obj == null || i != other.i || j != other.j
+				|| marked != other.marked || val != other.val)
+			return false;
+		return true;
+	}
+
+	Position(int x, int y, char v) {
+		i = x;
+		j = y;
+		val = v;
+	}
+
+	Position(int x, int y, char v, Position p) {
+		i = x;
+		j = y;
+		val = v;
+		parent = p;
+	}
+
+}
+
+public class PathFinder {
+
+	public static void main(String[] args) throws IOException {
+		if (args.length < 1) {
+			System.err.println("***Usage: java PathFinder maze_file");
+			System.exit(-1);
+		}
+
+		char[][] maze;
+		maze = readMaze(args[0]);
+		printMaze(maze);
+		Position[] path = stackSearch(maze);
+		System.out.println("stackSearch Solution:");
+		printPath(path);
+		printMaze(maze);
+
+		char[][] maze2 = readMaze(args[0]);
+		path = queueSearch(maze2);
+		System.out.println("queueSearch Solution:");
+		printPath(path);
+		printMaze(maze2);
+	}
+
+	public static Position[] stackSearch(char[][] maze) {
+		// todo: your path finding algorithm here using the stack to manage search list
+		// your algorithm should mark the path in the maze, and return array of Position 
+		// objects corresponding to path, or null if no path found
+		
+		ArrayDeque<Position> path = new ArrayDeque<Position>();
+		ArrayDeque<Position> visited = new ArrayDeque<Position>();
+
+		Position start = new Position(0, 0, '0');
+		Position position;
+		Position up, down, right, left;
+
+		int i = 0;
+		int j = 0;
+
+		path.push(start);
+		visited.push(start);
+
+		while (!path.isEmpty()) {
+			int s = path.size();
+			position = path.peek();
+			i = position.i;
+			j = position.j;
+
+			if (i == maze.length - 1 && j == maze.length - 1
+					&& maze[i][j] == '0') {
+				Position[] solution = new Position[path.size()];
+
+				for (int m = 0; m < s; m++) {
+					maze[path.peek().i][path.peek().j] = 'X';
+					solution[m] = path.pop();
+				}
+				return solution;
+			}
+
+			up = new Position(i - 1, j, '0');
+			down = new Position(i + 1, j, '0');
+			right = new Position(i, j + 1, '0');
+			left = new Position(i, j - 1, '0');
+
+			if (j + 1 >= 0 && j + 1 < maze.length && maze[i][j + 1] == '0'
+					&& visited.contains(right) == false) {
+				visited.push(right);
+				path.push(right);
+			} else if (i + 1 >= 0 && i + 1 < maze.length
+					&& maze[i + 1][j] == '0' && visited.contains(down) == false) {
+				visited.push(down);
+				path.push(down);
+			} else if (j - 1 >= 0 && j - 1 < maze.length
+					&& maze[i][j - 1] == '0' && visited.contains(left) == false) {
+				visited.push(left);
+				path.push(left);
+			} else if (i - 1 >= 0 && i - 1 < maze.length
+					&& maze[i - 1][j] == '0' && visited.contains(up) == false) {
+				visited.push(up);
+				path.push(up);
+			} else {
+				path.pop();
+			}
+		}
+		return null;
+	}
+
+	public static Position[] queueSearch(char[][] maze) {
+		// todo: your path finding algorithm here using the queue to manage search list
+		// your algorithm should mark the path in the maze, and return array of Position 
+		// objects corresponding to path, or null if no path found
+
+		ArrayDeque<Position> path = new ArrayDeque<Position>();
+		ArrayDeque<Position> visited = new ArrayDeque<Position>();
+
+		Position start = new Position(0, 0, '0');
+		Position position;
+		Position up, down, right, left;
+
+		int i = 0;
+		int j = 0;
+
+		path.addFirst(start);
+		visited.addFirst(start);
+		ArrayList<Position> qsolutions = new ArrayList<Position>();
+		while (!path.isEmpty()) {
+
+			position = path.removeFirst();
+			i = position.i;
+			j = position.j;
+
+			if (i == maze.length - 1 && j == maze.length - 1
+					&& maze[i][j] == '0') {
+				while (position.parent != null) {
+
+					for (int q = 0; q < 1; q++) {
+						qsolutions.add(position);
+					}
+					qsolutions.add(position.parent);
+					position = position.parent;
+				}
+
+				Position[] solution = new Position[qsolutions.size()];
+				qsolutions.toArray(solution);
+				for (int k = 0; k < solution.length; k++) {
+					Position temp = solution[k];
+					maze[temp.i][temp.j] = 'X';
+				}
+
+				return solution;
+			}
+
+			up = new Position(i - 1, j, '0');
+			down = new Position(i + 1, j, '0');
+			right = new Position(i, j + 1, '0');
+			left = new Position(i, j - 1, '0');
+
+			if (j + 1 >= 0 && j + 1 < maze.length && maze[i][j + 1] == '0'
+					&& visited.contains(right) == false) {
+				visited.addFirst(right);
+				right.parent = position;
+				path.addFirst(right);
+			}
+
+			if (i + 1 >= 0 && i + 1 < maze.length && maze[i + 1][j] == '0'
+					&& visited.contains(down) == false) {
+				visited.addFirst(down);
+				down.parent = position;
+				path.addFirst(down);
+			}
+
+			if (j - 1 >= 0 && j - 1 < maze.length && maze[i][j - 1] == '0'
+					&& visited.contains(left) == false) {
+				visited.addFirst(left);
+				left.parent = position;
+				path.addFirst(left);
+
+			}
+
+			if (i - 1 >= 0 && i - 1 < maze.length && maze[i - 1][j] == '0'
+					&& visited.contains(up) == false) {
+				visited.addFirst(up);
+				up.parent = position;
+				path.addFirst(up);
+			}
+
+		}
+		return null;
+	}
+
+	public static void printPath(Position[] path) {
+		// to do: print the path to the stdout
+		System.out.print("Path: (");
+		for (int i = path.length - 1; i >= 0; i--) {
+			Position print = path[i];
+			if (i == 0)
+				System.out.print("[" + print.i + "][" + print.j + "]");
+			else
+				System.out.print("[" + print.i + "][" + print.j + "],");
+		}
+		System.out.println(")");
+	}
+
+	/**
+	 * Reads maze file in format: N -- size of maze 0 1 0 1 0 1 --
+	 * space-separated
+	 * 
+	 * @param filename
+	 * @return
+	 * @throws IOException
+	 */
+	public static char[][] readMaze(String filename) throws IOException {
+		char[][] maze;
+		Scanner scanner;
+		try {
+			scanner = new Scanner(new FileInputStream(filename));
+		} catch (IOException ex) {
+			System.err.println("*** Invalid filename: " + filename);
+			return null;
+		}
+
+		int N = scanner.nextInt();
+		scanner.nextLine();
+		maze = new char[N][N];
+		int i = 0;
+		while (i < N && scanner.hasNext()) {
+			String line = scanner.nextLine();
+			String[] tokens = line.split("\\s+");
+			int j = 0;
+			for (; j < tokens.length; j++) {
+				maze[i][j] = tokens[j].charAt(0);
+			}
+			if (j != N) {
+				System.err.println("*** Invalid line: " + i
+						+ " has wrong # columns: " + j);
+				return null;
+			}
+			i++;
+		}
+		if (i != N) {
+			System.err.println("*** Invalid file: has wrong number of rows: "
+					+ i);
+			return null;
+		}
+		return maze;
+	}
+
+	public static void printMaze(char[][] maze) {
+
+		if (maze == null || maze[0] == null) {
+			System.err.println("*** Invalid maze array");
+			return;
+		}
+
+		for (int i = 0; i < maze.length; i++) {
+			for (int j = 0; j < maze[0].length; j++) {
+				System.out.print(maze[i][j] + " ");
+			}
+			System.out.println();
+		}
+
+		System.out.println();
+	}
+
+}
+clear
+exit
+xx^X
+
+X
+^X
+
