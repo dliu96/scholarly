@@ -1,2 +1,2 @@
 # scholarly
-Follow my academic pursuits in the art of computer science.
+Follow my academic pursuits in computer science.
